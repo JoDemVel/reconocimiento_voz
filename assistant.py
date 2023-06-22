@@ -4,15 +4,16 @@ import time
 import threading
 
 def main():
-    #listener = Listener()
-
+    listener = Listener()
+    print(listener.listen_mic())
+    """
     listener = Listener()
     threading.Thread(target=listener.start).start()
     time.sleep(2)
     listener.stop()
     path = listener.save()
     print(path)
-
+    """
 
     """    
     processor = Processor()

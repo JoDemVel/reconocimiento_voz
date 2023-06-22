@@ -33,6 +33,10 @@ class Listener:
         transcript = audio_model.transcribe(save_path, language='spanish', fp16 = False)
         return transcript['text']
 
+    def listen_mic(self):
+        print('Escuchando...')
+        return self.__recognize_audio(self.__listen_from_mic()).lower()
+
     def listen(self):
         response = self.__recognize_audio(self.__listen_from_mic()).lower()
         while True:
