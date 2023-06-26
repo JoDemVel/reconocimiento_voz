@@ -24,6 +24,7 @@ class Processor:
             if temp == 'gracias':
                 break
             if temp == 'kevin':
+                i += 1
                 continue
             if(temp == 'calle' or temp == 'avenida'):
                 k = i + 1

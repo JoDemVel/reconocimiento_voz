@@ -1,6 +1,3 @@
-import io
-from pydub import AudioSegment
-import speech_recognition as sr
 import whisper
 import tempfile
 import os
@@ -11,11 +8,10 @@ import wave
 temp_file = tempfile.mkdtemp()
 save_path = os.path.join(temp_file, "temp.wav")
 
-listener = sr.Recognizer()
 
 class Listener:
     def __init__(self):
-        self.frames = []
+        self.frames = [] # Arreglo de muestras
         self.is_recording = False
         self.audio_format = pyaudio.paInt16 # 16 bits por muestra
         self.channels = 1 # mono
@@ -35,8 +31,7 @@ class Listener:
                             rate=self.sample_rate, 
                             input=True, 
                             frames_per_buffer=self.chunk)
-        print("Grabando...")
-
+        print("Escuchando")
         while self.is_recording:
             data = stream.read(self.chunk)
             self.frames.append(data)
@@ -48,7 +43,6 @@ class Listener:
 
     def stop(self):
         self.is_recording = False
-        print("Grabación finalizada")
 
     def save(self):
         audio = pyaudio.PyAudio()
@@ -58,5 +52,5 @@ class Listener:
         wf.setframerate(self.sample_rate)
         wf.writeframes(b''.join(self.frames))
         wf.close()
-
-        return self.__recognize_audio(save_path).lower()
+        res = self.__recognize_audio(save_path).lower()
+        return res
