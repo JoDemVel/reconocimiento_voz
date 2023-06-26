@@ -3,15 +3,19 @@ import Levenshtein as lev
 
 class Processor:
 
-    def process(self, text):
-        palabras = set()
-        lugares = set()
-        text = text.replace(',','').replace('.','')
-        arr = text.split(' ')
+    def __init__(self):
+        self.palabras = set()
+        self.lugares = set()
         with open('words.json', encoding='utf-8') as file:
             data = json.load(file)
-            palabras = set(data['palabras'])
-            lugares = set(data['lugares'])
+            self.palabras = set(data['palabras'])
+            self.lugares = set(data['lugares'])
+
+    def process(self, text):
+        text = text.replace(',','').replace('.','')
+        arr = text.split(' ')
+        palabras = self.palabras
+        lugares = self.lugares
         
         comandos = []
         i = 1
