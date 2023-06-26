@@ -14,52 +14,18 @@ save_path = os.path.join(temp_file, "temp.wav")
 listener = sr.Recognizer()
 
 class Listener:
-    
-
-    def __listen_from_mic(self):
-        try:
-            with sr.Microphone() as source:
-                listener.adjust_for_ambient_noise(source)
-                voice = listener.listen(source)
-                data = io.BytesIO(voice.get_wav_data())
-                audio_clip = AudioSegment.from_file(data)
-                audio_clip.export(save_path, format="wav")
-        except Exception as e:
-            print(e)
-        return save_path
+    def __init__(self):
+        self.frames = []
+        self.is_recording = False
+        self.audio_format = pyaudio.paInt16 # 16 bits por muestra
+        self.channels = 1 # mono
+        self.sample_rate = 44100 # Hz
+        self.chunk = 1024 # muestras por buffer
 
     def __recognize_audio(self, save_path):
         audio_model = whisper.load_model('base')
         transcript = audio_model.transcribe(save_path, language='spanish', fp16 = False)
         return transcript['text']
-
-    def listen_mic(self):
-        print('Escuchando...')
-        return self.__recognize_audio(self.__listen_from_mic()).lower()
-
-    def listen(self):
-        response = self.__recognize_audio(self.__listen_from_mic()).lower()
-        while True:
-            if 'kevin' in response:
-                print('Escuchando')
-                response = response.replace('kevin', '')
-                while True:
-                    response = self.__recognize_audio(self.__listen_from_mic()).lower()
-                    if 'gracias' in response:
-                        break
-                break
-            else:
-                response = self.__recognize_audio(self.__listen_from_mic()).lower()
-        
-        return response
-
-    def __init__(self):
-        self.frames = []
-        self.is_recording = False
-        self.audio_format = pyaudio.paInt16
-        self.channels = 1
-        self.sample_rate = 44100
-        self.chunk = 1024
 
     def start(self):
         self.is_recording = True
@@ -79,7 +45,11 @@ class Listener:
         stream.close
         audio.terminate()
         self.save()
-    
+
+    def stop(self):
+        self.is_recording = False
+        print("Grabación finalizada")
+
     def save(self):
         audio = pyaudio.PyAudio()
         wf = wave.open(save_path, 'wb')
@@ -89,8 +59,4 @@ class Listener:
         wf.writeframes(b''.join(self.frames))
         wf.close()
 
-        return self.__recognize_audio(save_path)
-
-    def stop(self):
-        self.is_recording = False
-        print("Grabación finalizada")
+        return self.__recognize_audio(save_path).lower()
